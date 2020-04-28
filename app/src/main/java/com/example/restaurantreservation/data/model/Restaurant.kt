@@ -2,7 +2,7 @@ package com.example.restaurantreservation.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Result(
+data class Restaurant(
     var geometry: Geometry? = null,
     var icon: String? = null,
     var id: String? = null,

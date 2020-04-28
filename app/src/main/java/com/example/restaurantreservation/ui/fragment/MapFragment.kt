@@ -9,17 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.restaurantreservation.R
+import com.example.restaurantreservation.data.model.Restaurant
 import com.example.restaurantreservation.ui.viewmodel.MapViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -34,7 +36,8 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
     lateinit var providerFactory: ViewModelProviderFactory
 
     private var currentLocation: Location? = null
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
+    private var googleMap: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,14 +51,29 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this, providerFactory).get(MapViewModel::class.java)
         test_button.setOnClickListener {
-            viewModel.initialize()
+            currentLocation?.let { location -> viewModel.searchForNearbyRestaurants(location) }
         }
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
         fetchLocation()
+        viewModel.restaurants.observe(
+            viewLifecycleOwner,
+            Observer { restaurants -> restaurants?.let { refreshRestaurantsOnMap(it) } }
+        )
+    }
+
+    private fun refreshRestaurantsOnMap(restaurants: List<Restaurant>) {
+        restaurants.forEach { restaurant ->
+            restaurant.geometry?.location?.let {
+                googleMap?.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(it.latitude, it.longitude))
+                        .title(restaurant.name)
+                )
+            }
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
+        this.googleMap = googleMap
         val latLng = currentLocation?.let { LatLng(it.latitude, it.longitude) }
         googleMap?.apply {
             uiSettings?.setAllGesturesEnabled(true)
@@ -91,7 +109,8 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             )
             return
         }
-        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+        val task: Task<Location> =
+            LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation
         task.addOnSuccessListener { location ->
             if (location != null) {
                 currentLocation = location

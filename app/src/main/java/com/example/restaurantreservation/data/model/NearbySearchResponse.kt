@@ -7,6 +7,7 @@ data class NearbySearchResponse(
     var htmlAttributions: List<Any>? = null,
     @SerializedName("next_page_token")
     var nextPageToken: String? = null,
-    var results: List<Result>? = null,
+    @SerializedName("results")
+    var restaurants: List<Restaurant>? = null,
     var status: String? = null
 )

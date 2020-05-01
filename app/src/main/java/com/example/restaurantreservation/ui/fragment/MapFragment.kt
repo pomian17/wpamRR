@@ -11,8 +11,12 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.restaurantreservation.R
 import com.example.restaurantreservation.data.model.Restaurant
+import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
+import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
 import com.example.restaurantreservation.ui.viewmodel.MapViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
@@ -25,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
+import org.jsoup.Jsoup
 import javax.inject.Inject
 
 
@@ -39,6 +44,10 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
 
+    private val adapter = RestaurantsListAdapter {
+        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +58,10 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val snapHelper = PagerSnapHelper()
+        recyclerview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        snapHelper.attachToRecyclerView(recyclerview)
+        recyclerview.adapter = adapter
         viewModel = ViewModelProvider(this, providerFactory).get(MapViewModel::class.java)
         test_button.setOnClickListener {
             currentLocation?.let { location -> viewModel.searchForNearbyRestaurants(location) }
@@ -56,8 +69,14 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
         fetchLocation()
         viewModel.restaurants.observe(
             viewLifecycleOwner,
-            Observer { restaurants -> restaurants?.let { refreshRestaurantsOnMap(it) } }
+            Observer { restaurants -> restaurants?.let { refreshRestaurants(it) } }
         )
+
+    }
+
+    private fun refreshRestaurants(restaurants: List<Restaurant>) {
+        refreshRestaurantsOnMap(restaurants)
+        refreshRestaurantsViewPager(restaurants)
     }
 
     private fun refreshRestaurantsOnMap(restaurants: List<Restaurant>) {
@@ -70,6 +89,18 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                 )
             }
         }
+    }
+
+    private fun refreshRestaurantsViewPager(restaurants: List<Restaurant>) {
+        adapter.setAllItems(
+            restaurants.map {
+                RestaurantAdapterModel(
+                    it.name,
+                    it.photos?.first()?.getPhotoRequest(),
+                    it.rating,
+                    it.openingHours?.openNow.toString()
+                )
+            })
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {

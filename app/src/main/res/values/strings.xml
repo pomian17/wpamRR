@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">RestaurantReservation</string>
     <string name="title_activity_maps">Map</string>
+    <string name="map_tab">Map</string>
+    <string name="list_tab">List</string>
 </resources>

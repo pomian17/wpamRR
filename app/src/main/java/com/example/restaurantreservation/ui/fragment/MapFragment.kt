@@ -29,13 +29,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
-import org.jsoup.Jsoup
 import javax.inject.Inject
 
 
 class MapFragment : DaggerFragment(), OnMapReadyCallback {
 
-    lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: MapViewModel
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
@@ -59,13 +58,11 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val snapHelper = PagerSnapHelper()
-        recyclerview.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerview.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         snapHelper.attachToRecyclerView(recyclerview)
         recyclerview.adapter = adapter
-        viewModel = ViewModelProvider(this, providerFactory).get(MapViewModel::class.java)
-        test_button.setOnClickListener {
-            currentLocation?.let { location -> viewModel.searchForNearbyRestaurants(location) }
-        }
+        viewModel = ViewModelProvider(requireActivity(), providerFactory).get(MapViewModel::class.java)
         fetchLocation()
         viewModel.restaurants.observe(
             viewLifecycleOwner,
@@ -92,6 +89,12 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
     }
 
     private fun refreshRestaurantsViewPager(restaurants: List<Restaurant>) {
+        val bottomMapPadding = if (restaurants.isNotEmpty()) {
+            recyclerview.height
+        } else {
+            0
+        }
+        googleMap?.setPadding(0, 0, 0, bottomMapPadding)
         adapter.setAllItems(
             restaurants.map {
                 RestaurantAdapterModel(

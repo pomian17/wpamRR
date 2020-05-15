@@ -17,7 +17,7 @@ import com.example.restaurantreservation.R
 import com.example.restaurantreservation.data.model.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
-import com.example.restaurantreservation.ui.viewmodel.MapViewModel
+import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 class MapFragment : DaggerFragment(), OnMapReadyCallback {
 
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: SearchViewModel
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
@@ -62,7 +62,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         snapHelper.attachToRecyclerView(recyclerview)
         recyclerview.adapter = adapter
-        viewModel = ViewModelProvider(requireActivity(), providerFactory).get(MapViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
         fetchLocation()
         viewModel.restaurants.observe(
             viewLifecycleOwner,

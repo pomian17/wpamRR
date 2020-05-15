@@ -13,7 +13,7 @@ import javax.inject.Inject
 import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 
-class MapViewModel @Inject constructor(
+class SearchViewModel @Inject constructor(
     private val placesApi: PlacesApi
 ) : ViewModel() {
 
@@ -24,7 +24,7 @@ class MapViewModel @Inject constructor(
     private var disposables: CompositeDisposable = CompositeDisposable()
 
     fun searchForNearbyRestaurants(location: Location) {
-        placesApi.getPlaces("51.131406, 23.475411", 2000)
+        placesApi.getPlaces(location.latitude.toString()+", "+location.longitude.toString(), 2000)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

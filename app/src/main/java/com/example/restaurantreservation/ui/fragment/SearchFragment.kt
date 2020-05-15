@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.example.restaurantreservation.R
 import com.example.restaurantreservation.ui.adapter.SearchResultsAdapter
-import com.example.restaurantreservation.ui.viewmodel.MapViewModel
+import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class SearchFragment : DaggerFragment() {
 
-    private lateinit var viewModel: MapViewModel
+    private lateinit var viewModel: SearchViewModel
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
@@ -45,7 +45,7 @@ class SearchFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel =
-            ViewModelProvider(requireActivity(), providerFactory).get(MapViewModel::class.java)
+            ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
         test_button.setOnClickListener {
             currentLocation?.let { location -> viewModel.searchForNearbyRestaurants(location) }
         }

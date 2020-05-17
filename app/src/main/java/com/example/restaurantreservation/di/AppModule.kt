@@ -2,7 +2,7 @@ package com.example.restaurantreservation.di
 
 import android.content.Context
 import com.example.restaurantreservation.RestaurantReservationApp
-import com.example.restaurantreservation.data.PlacesApi
+import com.example.restaurantreservation.data.network.PlacesApi
 import com.example.restaurantreservation.util.Constants
 import dagger.Module
 import dagger.Provides

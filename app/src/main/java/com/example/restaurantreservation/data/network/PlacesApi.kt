@@ -1,4 +1,4 @@
-package com.example.restaurantreservation.data
+package com.example.restaurantreservation.data.network
 
 import com.example.restaurantreservation.BuildConfig
 import com.example.restaurantreservation.data.model.NearbySearchResponse
@@ -13,5 +13,10 @@ interface PlacesApi {
         @Query("location") location: String,
         @Query("radius") radius: Int,
         @Query("type") type: String = "restaurant"
-    ):Flowable<NearbySearchResponse>
+    ): Flowable<NearbySearchResponse>
+
+    @GET("nearbysearch/json?key=${BuildConfig.GoogleAPIKEY}")
+    fun getNextPlacesPage(
+        @Query("pagetoken") pageToken: String
+    ): Flowable<NearbySearchResponse>
 }

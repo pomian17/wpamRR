@@ -17,6 +17,7 @@ import com.example.restaurantreservation.R
 import com.example.restaurantreservation.data.model.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
+import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantsViewHolder
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
@@ -25,11 +26,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -48,6 +49,8 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
         Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
     }
 
+    private val markers = mutableListOf<Marker>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,7 +66,11 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         snapHelper.attachToRecyclerView(recyclerview)
         recyclerview.adapter = adapter
-        viewModel = ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
+        recyclerview.setOnScrollChangeListener { _, _, _, _, _ ->
+            animateCameraToSelectedMarker()
+        }
+        viewModel =
+            ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
         fetchLocation()
         viewModel.restaurants.observe(
             viewLifecycleOwner,
@@ -72,19 +79,36 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
 
     }
 
+    private fun animateCameraToSelectedMarker(){
+        val visibleView = recyclerview.getChildAt(0)
+        if (visibleView.x > 0) {
+            val visibleViewHolder =
+                recyclerview.getChildViewHolder(visibleView) as RestaurantsViewHolder
+            val visibleRestaurantId = visibleViewHolder.model!!.placeId
+            markers.firstOrNull { it.tag == visibleRestaurantId }?.let { marker ->
+                marker.showInfoWindow()
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+            }
+        }
+    }
+
     private fun refreshRestaurants(restaurants: List<Restaurant>) {
         refreshRestaurantsOnMap(restaurants)
         refreshRestaurantsViewPager(restaurants)
     }
 
     private fun refreshRestaurantsOnMap(restaurants: List<Restaurant>) {
+        googleMap?.clear()
+        markers.clear()
         restaurants.forEach { restaurant ->
             restaurant.geometry?.location?.let {
                 googleMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
-                        .title(restaurant.name)
-                )
+                )?.apply {
+                    tag = restaurant.placeId
+                    markers.add(this)
+                }
             }
         }
     }
@@ -102,7 +126,8 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                     it.name,
                     it.photos?.first()?.getPhotoRequest(),
                     it.rating,
-                    it.openingHours?.openNow.toString()
+                    it.openingHours?.openNow.toString(),
+                    it.placeId
                 )
             })
     }
@@ -117,6 +142,11 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             isMyLocationEnabled = true
             animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
             setOnCameraIdleListener { viewModel.setSearchArea(projection.visibleRegion.latLngBounds) }
+            setOnMarkerClickListener { marker ->
+                val position = adapter.items.indexOfFirst { it.placeId == marker.tag }
+                recyclerview.scrollToPosition(position)
+                false
+            }
         }
     }
 

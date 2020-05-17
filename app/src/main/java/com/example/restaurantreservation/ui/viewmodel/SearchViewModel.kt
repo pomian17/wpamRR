@@ -31,7 +31,7 @@ class SearchViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Timber.d("searchNearbyRestaurants size: ${it.restaurants.size}")
+                    Timber.d("searchNearbyRestaurants size: ${it.restaurants?.size}")
                     _restaurants.value = it.restaurants
                 }, {
                     Timber.d("searchNearbyRestaurants: error - $it")

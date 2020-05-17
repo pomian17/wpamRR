@@ -22,5 +22,6 @@ class RestaurantAdapterModel(
     val name: String,
     val imageUrl: String?,
     val rating: Double,
-    val openingHours: String
+    val openingHours: String,
+    val placeId: String
 )

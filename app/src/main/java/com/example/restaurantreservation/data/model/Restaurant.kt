@@ -9,7 +9,7 @@ data class Restaurant(
     var name: String,
     var photos: List<Photo>? = null,
     @SerializedName("place_id")
-    var placeId: String? = null,
+    var placeId: String,
     var reference: String? = null,
     var scope: String? = null,
     var types: List<String>? = null,

@@ -53,7 +53,8 @@ class ResultsListFragment : DaggerFragment() {
                     it.name,
                     it.photos?.first()?.getPhotoRequest(),
                     it.rating,
-                    it.openingHours?.openNow.toString()
+                    it.openingHours?.openNow.toString(),
+                    it.placeId
                 )
             })
     }

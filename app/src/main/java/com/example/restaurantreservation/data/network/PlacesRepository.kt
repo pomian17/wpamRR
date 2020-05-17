@@ -1,8 +1,10 @@
 package com.example.restaurantreservation.data.network
 
+import android.location.Location
 import com.example.restaurantreservation.data.model.NearbySearchResponse
 import com.example.restaurantreservation.data.model.Restaurant
 import com.example.restaurantreservation.data.model.RestaurantsResponse
+import com.google.android.gms.maps.model.LatLngBounds
 import io.reactivex.Flowable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -12,12 +14,25 @@ class PlacesRepository @Inject constructor(
 ) {
 
     fun getFullNearbyPlaces(
-        location: String,
-        radius: Int,
+        bounds: LatLngBounds,
         type: String = "restaurant"
-    ): Flowable<RestaurantsResponse> =
-        placesApi.getPlaces(location, radius, type)
+    ): Flowable<RestaurantsResponse> {
+        val location = bounds.center
+        val distanceResults = FloatArray(3)
+        Location.distanceBetween(
+            bounds.northeast.latitude,
+            bounds.northeast.longitude,
+            bounds.southwest.latitude,
+            bounds.southwest.longitude,
+            distanceResults
+        )
+        return placesApi.getPlaces(
+            location.latitude.toString() + ", " + location.longitude.toString(),
+             distanceResults.first().toInt(),
+            type
+        )
             .flatMap { getNextPages(it.nextPageToken, it.restaurants.orEmpty()) }
+    }
 
     private fun getNextPages(
         nextPageToken: String?,

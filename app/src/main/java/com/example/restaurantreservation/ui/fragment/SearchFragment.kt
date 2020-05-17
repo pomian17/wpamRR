@@ -47,7 +47,7 @@ class SearchFragment : DaggerFragment() {
         viewModel =
             ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
         test_button.setOnClickListener {
-            currentLocation?.let { location -> viewModel.searchForNearbyRestaurants(location) }
+            viewModel.searchForNearbyRestaurants()
         }
         setupViewPager()
         fetchLocation()

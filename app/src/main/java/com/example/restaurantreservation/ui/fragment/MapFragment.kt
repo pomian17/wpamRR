@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -115,6 +116,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             uiSettings?.isZoomControlsEnabled = true
             isMyLocationEnabled = true
             animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
+            setOnCameraIdleListener { viewModel.setSearchArea(projection.visibleRegion.latLngBounds) }
         }
     }
 

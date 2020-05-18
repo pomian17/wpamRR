@@ -1,5 +1,8 @@
-package com.example.restaurantreservation.data.model
+package com.example.restaurantreservation.data.model.places
 
+import com.example.restaurantreservation.data.model.places.Geometry
+import com.example.restaurantreservation.data.model.places.OpeningHours
+import com.example.restaurantreservation.data.model.places.Photo
 import com.google.gson.annotations.SerializedName
 
 data class Restaurant(

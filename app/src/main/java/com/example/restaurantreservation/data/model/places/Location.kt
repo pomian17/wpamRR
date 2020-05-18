@@ -1,4 +1,4 @@
-package com.example.restaurantreservation.data.model
+package com.example.restaurantreservation.data.model.places
 
 import com.google.gson.annotations.SerializedName
 

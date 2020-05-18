@@ -9,15 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.restaurantreservation.R
-import com.example.restaurantreservation.data.model.Restaurant
+import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
 import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantsViewHolder
+import com.example.restaurantreservation.ui.fragment.RestaurantFragment.Companion.EXTRA_PLACE_ID
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
@@ -46,7 +49,8 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
 
     private val adapter = RestaurantsListAdapter {
-        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        val bundle = bundleOf(EXTRA_PLACE_ID to it)
+        findNavController().navigate(R.id.action_searchFragment_to_restaurantFragment, bundle)
     }
 
     private val markers = mutableListOf<Marker>()
@@ -104,7 +108,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                 googleMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
-                        .alpha(if(restaurant.isInRrDatabase) 1.0f else 0.5f)
+                        .alpha(if (restaurant.isInRrDatabase) 1.0f else 0.5f)
                 )?.apply {
                     tag = restaurant.placeId
                     markers.add(this)

@@ -1,4 +1,4 @@
-package com.example.restaurantreservation.data.model
+package com.example.restaurantreservation.data.model.places
 
 data class Geometry(
     var location: Location,

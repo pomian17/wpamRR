@@ -1,7 +1,7 @@
 package com.example.restaurantreservation.data.network.places
 
 import com.example.restaurantreservation.BuildConfig
-import com.example.restaurantreservation.data.model.NearbySearchResponse
+import com.example.restaurantreservation.data.model.places.NearbySearchResponse
 import io.reactivex.Flowable
 import retrofit2.http.GET
 import retrofit2.http.Query

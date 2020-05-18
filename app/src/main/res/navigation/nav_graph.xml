@@ -5,5 +5,13 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.restaurantreservation.ui.fragment.SearchFragment"
-        android:label="SearchFragment" />
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_restaurantFragment"
+            app:destination="@id/restaurantFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/restaurantFragment"
+        android:name="com.example.restaurantreservation.ui.fragment.RestaurantFragment"
+        android:label="RestaurantFragment" />
 </navigation>

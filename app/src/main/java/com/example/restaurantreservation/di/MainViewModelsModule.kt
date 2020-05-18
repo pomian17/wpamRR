@@ -2,6 +2,7 @@ package com.example.restaurantreservation.di
 
 import androidx.lifecycle.ViewModel
 import com.example.daggerpractice.di.ViewModelKey
+import com.example.restaurantreservation.ui.viewmodel.RestaurantViewModel
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import dagger.Binds
 import dagger.Module
@@ -14,4 +15,9 @@ abstract class MainViewModelsModule {
     @IntoMap
     @ViewModelKey(SearchViewModel::class)
     abstract fun bindMapViewModel(viewModel: SearchViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RestaurantViewModel::class)
+    abstract fun bindRestaurantViewModel(viewModel: RestaurantViewModel): ViewModel
 }

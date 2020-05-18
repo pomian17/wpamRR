@@ -3,7 +3,7 @@ package com.example.restaurantreservation.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.restaurantreservation.data.model.Restaurant
+import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.data.network.PlacesRepository
 import com.google.android.gms.maps.model.LatLngBounds
 import io.reactivex.android.schedulers.AndroidSchedulers

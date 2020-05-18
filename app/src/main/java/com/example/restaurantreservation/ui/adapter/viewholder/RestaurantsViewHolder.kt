@@ -22,6 +22,6 @@ class RestaurantsViewHolder(
         }
         view.restaurant_rating.text = model.rating.toString()
         view.opening_hours.text = model.openingHours
-        view.setOnClickListener { onClickListener.invoke(model.name) }
+        view.setOnClickListener { onClickListener.invoke(model.placeId) }
     }
 }

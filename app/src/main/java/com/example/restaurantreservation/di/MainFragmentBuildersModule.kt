@@ -1,6 +1,7 @@
 package com.example.restaurantreservation.di
 
 import com.example.restaurantreservation.ui.fragment.MapFragment
+import com.example.restaurantreservation.ui.fragment.RestaurantFragment
 import com.example.restaurantreservation.ui.fragment.ResultsListFragment
 import com.example.restaurantreservation.ui.fragment.SearchFragment
 import dagger.Module
@@ -17,5 +18,8 @@ abstract class MainFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeResultsListFragment(): ResultsListFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeRestaurantFragment(): RestaurantFragment
 
 }

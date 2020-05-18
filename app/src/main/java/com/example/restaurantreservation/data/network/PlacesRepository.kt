@@ -1,10 +1,10 @@
 package com.example.restaurantreservation.data.network
 
 import android.location.Location
-import com.example.restaurantreservation.data.model.NearbySearchResponse
-import com.example.restaurantreservation.data.model.Restaurant
-import com.example.restaurantreservation.data.model.RrRestaurant
-import com.example.restaurantreservation.data.model.RrRestaurantResponse
+import com.example.restaurantreservation.data.model.places.NearbySearchResponse
+import com.example.restaurantreservation.data.model.places.Restaurant
+import com.example.restaurantreservation.data.model.wpamrr.RrRestaurant
+import com.example.restaurantreservation.data.model.wpamrr.RrRestaurantResponse
 import com.example.restaurantreservation.data.network.places.PlacesApi
 import com.example.restaurantreservation.data.network.restaurantreservation.RestaurantsApi
 import com.google.android.gms.maps.model.LatLngBounds

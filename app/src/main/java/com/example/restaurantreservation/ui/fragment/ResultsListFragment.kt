@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.restaurantreservation.R
-import com.example.restaurantreservation.data.model.Restaurant
+import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
@@ -25,7 +26,8 @@ class ResultsListFragment : DaggerFragment() {
     lateinit var providerFactory: ViewModelProviderFactory
 
     private val adapter = RestaurantsListAdapter {
-        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        val bundle = bundleOf(RestaurantFragment.EXTRA_PLACE_ID to it)
+        findNavController().navigate(R.id.action_searchFragment_to_restaurantFragment, bundle)
     }
 
     override fun onCreateView(
@@ -46,6 +48,7 @@ class ResultsListFragment : DaggerFragment() {
             Observer { restaurants -> restaurants?.let { refreshRestaurants(it) } }
         )
     }
+
     private fun refreshRestaurants(restaurants: List<Restaurant>) {
         adapter.setAllItems(
             restaurants.map {

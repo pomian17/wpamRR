@@ -1,4 +1,4 @@
-package com.example.restaurantreservation.data.model
+package com.example.restaurantreservation.data.model.places
 
 import com.example.restaurantreservation.BuildConfig
 import com.example.restaurantreservation.util.Constants

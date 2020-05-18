@@ -92,4 +92,7 @@ dependencies {
     //appcenter
     implementation "com.microsoft.appcenter:appcenter-analytics:3.2.1"
     implementation "com.microsoft.appcenter:appcenter-crashes:3.2.1"
+
+    //TouchImageView
+    implementation 'com.github.MikeOrtiz:TouchImageView:3.0.1'
 }

@@ -1,4 +1,4 @@
-package com.example.restaurantreservation.data.network
+package com.example.restaurantreservation.data.network.places
 
 import com.example.restaurantreservation.BuildConfig
 import com.example.restaurantreservation.data.model.NearbySearchResponse

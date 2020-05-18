@@ -76,10 +76,9 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
             viewLifecycleOwner,
             Observer { restaurants -> restaurants?.let { refreshRestaurants(it) } }
         )
-
     }
 
-    private fun animateCameraToSelectedMarker(){
+    private fun animateCameraToSelectedMarker() {
         val visibleView = recyclerview.getChildAt(0)
         if (visibleView.x > 0) {
             val visibleViewHolder =
@@ -105,6 +104,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                 googleMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
+                        .alpha(if(restaurant.isInRrDatabase) 1.0f else 0.5f)
                 )?.apply {
                     tag = restaurant.placeId
                     markers.add(this)

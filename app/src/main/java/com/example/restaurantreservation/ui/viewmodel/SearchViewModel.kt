@@ -30,9 +30,9 @@ class SearchViewModel @Inject constructor(
             placesRepository.getFullNearbyPlaces(it)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Timber.d("searchNearbyRestaurants size: ${it.restaurants?.size}")
-                    _restaurants.value = it.restaurants
+                .subscribe({restaurants->
+                    Timber.d("searchNearbyRestaurants size: ${restaurants.size}")
+                    _restaurants.value = restaurants
                 }, {
                     Timber.d("searchNearbyRestaurants: error - $it")
                 })

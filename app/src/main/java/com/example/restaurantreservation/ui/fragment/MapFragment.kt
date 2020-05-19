@@ -19,7 +19,7 @@ import com.example.restaurantreservation.R
 import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
-import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantsViewHolder
+import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantViewHolder
 import com.example.restaurantreservation.ui.fragment.RestaurantFragment.Companion.EXTRA_PLACE_ID
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
@@ -86,7 +86,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
         val visibleView = recyclerview.getChildAt(0)
         if (visibleView.x > 0) {
             val visibleViewHolder =
-                recyclerview.getChildViewHolder(visibleView) as RestaurantsViewHolder
+                recyclerview.getChildViewHolder(visibleView) as RestaurantViewHolder
             val visibleRestaurantId = visibleViewHolder.model!!.placeId
             markers.firstOrNull { it.tag == visibleRestaurantId }?.let { marker ->
                 marker.showInfoWindow()
@@ -108,7 +108,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                 googleMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
-                        .alpha(if (restaurant.isInRrDatabase) 1.0f else 0.5f)
+                        .alpha(if (restaurant.isInRrDatabase) 1.0f else 0.3f)
                 )?.apply {
                     tag = restaurant.placeId
                     markers.add(this)

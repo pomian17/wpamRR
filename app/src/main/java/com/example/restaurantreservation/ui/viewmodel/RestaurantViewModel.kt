@@ -1,9 +1,13 @@
 package com.example.restaurantreservation.ui.viewmodel
 
+import android.content.Context
 import android.text.format.DateFormat
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.restaurantreservation.data.local.ReservationRepository
+import com.example.restaurantreservation.data.local.model.Reservation
 import com.example.restaurantreservation.data.model.wpamrr.ReservationBody
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantDetails
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantLevel
@@ -12,13 +16,18 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
 
 class RestaurantViewModel @Inject constructor(
-    private val rrApi: RrApi
+    private val rrApi: RrApi,
+    private val reservationRepository: ReservationRepository,
+    private val context: Context //TODO only temporary
 ) : ViewModel() {
 
     private val _restaurantLevel = MutableLiveData<Pair<RestaurantLevel, Int?>>()
@@ -105,7 +114,18 @@ class RestaurantViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.d("postReservation: $it")
+                Toast.makeText(context,"Reservation successful!", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    reservationRepository.insert(
+                        Reservation(
+                           it.guid,
+                            date,
+                            placeId
+                        )
+                    )
+                }
             }, {
+                Toast.makeText(context,"Reservation failed!", Toast.LENGTH_SHORT).show()
                 Timber.d("postReservation: error - $it")
             })
             .addTo(disposables)

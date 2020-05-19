@@ -1,4 +1,4 @@
-package com.example.daggerpractice.di
+package com.example.restaurantreservation.di
 
 import androidx.lifecycle.ViewModel
 import dagger.MapKey

@@ -1,6 +1,5 @@
 package com.example.restaurantreservation.di
 
-import android.app.Application
 import com.example.restaurantreservation.RestaurantReservationApp
 import dagger.BindsInstance
 import dagger.Component
@@ -15,7 +14,8 @@ import javax.inject.Singleton
         AndroidInjectionModule::class,
         ActivityBuilderModule::class,
         AppModule::class,
-        ViewModelFactoryModule::class
+        ViewModelFactoryModule::class,
+        RoomModule::class
     ]
 )
 interface AppComponent : AndroidInjector<RestaurantReservationApp> {
@@ -23,7 +23,7 @@ interface AppComponent : AndroidInjector<RestaurantReservationApp> {
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: Application): Builder
+        fun application(application: RestaurantReservationApp): Builder
 
         fun build(): AppComponent
     }

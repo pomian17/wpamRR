@@ -14,4 +14,8 @@
         android:id="@+id/restaurantFragment"
         android:name="com.example.restaurantreservation.ui.fragment.RestaurantFragment"
         android:label="RestaurantFragment" />
+    <fragment
+        android:id="@+id/reservationsFragment"
+        android:name="com.example.restaurantreservation.ui.fragment.ReservationsFragment"
+        android:label="ReservationsFragment" />
 </navigation>

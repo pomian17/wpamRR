@@ -6,7 +6,7 @@ import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import kotlinx.android.synthetic.main.restaurant_viewholder.view.*
 
 
-class RestaurantsViewHolder(
+class RestaurantViewHolder(
     view: View,
     private val onClickListener: (String) -> Unit
 ) : BaseViewHolder<RestaurantAdapterModel>(view) {

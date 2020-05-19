@@ -8,7 +8,8 @@ import com.example.restaurantreservation.data.model.wpamrr.RestaurantTable
 
 
 object RestaurantMapDrawer {
-    fun drawRestaurant(restaurantLevel: RestaurantLevel): Bitmap {
+    fun drawRestaurant(data: Pair<RestaurantLevel, Int?>): Bitmap {
+        val restaurantLevel = data.first
         val bitmap = Bitmap.createBitmap(900, 700, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
@@ -20,7 +21,7 @@ object RestaurantMapDrawer {
 
 
         restaurantLevel.shape?.let { drawWalls(it, canvas) }
-        restaurantLevel.tables?.let { drawTables(it, canvas) }
+        restaurantLevel.tables?.let { drawTables(it, data.second, canvas) }
         restaurantLevel.objects?.let { drawObjects(it, canvas) }
         return bitmap
     }
@@ -39,11 +40,15 @@ object RestaurantMapDrawer {
 
     }
 
-    private fun drawTables(tables: List<RestaurantTable>, canvas: Canvas) {
+    private fun drawTables(tables: List<RestaurantTable>, selectedTableId: Int?, canvas: Canvas) {
         val paint = Paint()
         tables.forEach {
 
-            paint.color = Color.RED
+            paint.color = when {
+                selectedTableId == it.id -> Color.YELLOW
+                it.reserved -> Color.GRAY
+                else -> Color.RED
+            }
             paint.style = Paint.Style.FILL
             canvas.drawRect(
                 it.x.toFloat(),

@@ -6,7 +6,7 @@ import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.data.model.wpamrr.RrRestaurant
 import com.example.restaurantreservation.data.model.wpamrr.RrRestaurantResponse
 import com.example.restaurantreservation.data.network.places.PlacesApi
-import com.example.restaurantreservation.data.network.restaurantreservation.RestaurantsApi
+import com.example.restaurantreservation.data.network.restaurantreservation.RrApi
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.gson.Gson
 import io.reactivex.Flowable
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class PlacesRepository @Inject constructor(
     private val placesApi: PlacesApi,
-    private val restaurantsApi: RestaurantsApi
+    private val rrApi: RrApi
 ) {
 
     fun getFullNearbyPlaces(
@@ -24,7 +24,7 @@ class PlacesRepository @Inject constructor(
     ): Flowable<List<Restaurant>> {
         return Flowable.combineLatest<List<Restaurant>, RrRestaurantResponse, List<Restaurant>>(
             getGoogleNearbyPlaces(bounds),
-            restaurantsApi.getRestaurants(),
+            rrApi.getRestaurants(),
             BiFunction { nearbySearchResponse, rrRestaurantResponse ->
                 nearbySearchResponse.forEach {
                     it.isInRrDatabase =
@@ -34,9 +34,6 @@ class PlacesRepository @Inject constructor(
             }
         )
     }
-
-    fun getRestaurants(): Flowable<RrRestaurantResponse> =
-        restaurantsApi.getRestaurants()
 
     private fun getGoogleNearbyPlaces(
         bounds: LatLngBounds,

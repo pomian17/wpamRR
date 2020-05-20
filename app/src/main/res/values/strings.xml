@@ -5,7 +5,7 @@
     <string name="list_tab">List</string>
     <string name="email">e-mail:</string>
     <string name="table">Table:</string>
-    <string name="book">Book</string>
+    <string name="book">Reserve</string>
     <string name="cancel">Cancel</string>
     <string name="search">Search</string>
     <string name="reservations">Reservations</string>
@@ -15,4 +15,5 @@
     <string name="reserve_in">Reserve table in</string>
     <string name="date">Date:</string>
     <string name="table_info_template">%d - %d person(s)</string>
+    <string name="loading_restaurant">loading data…</string>
 </resources>

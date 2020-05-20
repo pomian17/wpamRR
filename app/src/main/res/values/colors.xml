@@ -5,4 +5,7 @@
     <color name="colorAccent">#006699</color>
     <color name="rrRed">#dd7777</color>
     <color name="rrGreen">#77dd77</color>
+    <color name="rrGreen_light">#93DA93</color>
+    <color name="rrGray">#939393</color>
+    <color name="rrLightGray">#ddd</color>
 </resources>

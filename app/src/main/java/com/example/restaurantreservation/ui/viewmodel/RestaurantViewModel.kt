@@ -1,8 +1,6 @@
 package com.example.restaurantreservation.ui.viewmodel
 
-import android.content.Context
 import android.text.format.DateFormat
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,7 +10,9 @@ import com.example.restaurantreservation.data.model.wpamrr.ReservationBody
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantDetails
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantLevel
 import com.example.restaurantreservation.data.network.restaurantreservation.RrApi
+import com.example.restaurantreservation.ui.RestaurantViewState
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
+import com.example.restaurantreservation.util.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -27,9 +27,12 @@ import javax.inject.Inject
 
 class RestaurantViewModel @Inject constructor(
     private val rrApi: RrApi,
-    private val reservationRepository: ReservationRepository,
-    private val context: Context //TODO only temporary
+    private val reservationRepository: ReservationRepository
 ) : ViewModel() {
+
+    private val _state = MutableLiveData<RestaurantViewState>()
+    val state: LiveData<RestaurantViewState>
+        get() = _state
 
     private val _restaurantLevel = MutableLiveData<Pair<RestaurantLevel, Int?>>()
     val restaurantLevel: LiveData<Pair<RestaurantLevel, Int?>>
@@ -39,19 +42,23 @@ class RestaurantViewModel @Inject constructor(
     val maxLevel: LiveData<Int?>
         get() = _maxLevel
 
-    private val _selectedDate = MutableLiveData<String>()
-    val selectedDate: LiveData<String>
-        get() = _selectedDate
+
+    private val _canReserve = MutableLiveData<Boolean>()
+    val canReserve: LiveData<Boolean>
+        get() = _canReserve
+
     private var disposables: CompositeDisposable = CompositeDisposable()
 
     private var restaurantDetails: RestaurantDetails? = null
     private lateinit var placeId: String
     private var email: String? = null
+    private var selectedDate : String? = null
 
     fun initialize(data: RestaurantAdapterModel?) {
         data ?: return
         this.placeId = data.placeId
         setDateAndRefreshTables(System.currentTimeMillis())
+        _canReserve.value = false
     }
 
     private fun getRestaurantDetails(dateTime: String? = null) {
@@ -60,13 +67,16 @@ class RestaurantViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ details ->
                 Timber.d("getRestaurant: $details")
+                _state.value = RestaurantViewState.Idle
                 details.levels?.firstOrNull()?.let { level ->
                     _restaurantLevel.value = level to level.tables?.first()?.id
                 }
                 _maxLevel.value = details.levels?.lastIndex
                 restaurantDetails = details
+                checkIfCanReserve()
             }, {
                 Timber.d("getRestaurant: error - $it")
+                _state.value = RestaurantViewState.ShowError
             })
             .addTo(disposables)
     }
@@ -80,11 +90,12 @@ class RestaurantViewModel @Inject constructor(
         restaurantDetails?.levels?.getOrNull(floorNr)?.let { level ->
             _restaurantLevel.value = level to level.tables?.first()?.id
         }
+        checkIfCanReserve()
     }
 
     fun setDateAndRefreshTables(selectedTime: Long) {
-        val dateString = DateFormat.format("yyyy-MM-ddTHH:mm:ssZ", Date(selectedTime)).toString()
-        _selectedDate.value = dateString
+        val dateString = DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedTime)).toString()
+        selectedDate = dateString
         getRestaurantDetails(dateString)
     }
 
@@ -98,13 +109,13 @@ class RestaurantViewModel @Inject constructor(
         if (newTablePosition < 0) newTablePosition = tablesList.lastIndex
         if (newTablePosition > tablesList.lastIndex) newTablePosition = 0
         val newTableId = tablesList[newTablePosition].id
-
         _restaurantLevel.value = restaurantLevel to newTableId
-
+        checkIfCanReserve()
     }
 
     fun sendBookingRequest() {
-        val date = _selectedDate.value ?: return
+        _canReserve.value = false
+        val date = selectedDate ?: return
         val selectedTableId = _restaurantLevel.value?.second ?: return
         val email = this.email ?: return
         rrApi.postReservation(
@@ -118,7 +129,7 @@ class RestaurantViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.d("postReservation: $it")
-                Toast.makeText(context, "Reservation successful!", Toast.LENGTH_SHORT).show()
+                _state.value = RestaurantViewState.ReservationSuccessful
                 CoroutineScope(Dispatchers.IO).launch {
                     reservationRepository.insert(
                         Reservation(
@@ -128,15 +139,30 @@ class RestaurantViewModel @Inject constructor(
                         )
                     )
                 }
+                checkIfCanReserve()
             }, {
-                Toast.makeText(context, "Reservation failed!", Toast.LENGTH_SHORT).show()
+                _state.value = RestaurantViewState.ReservationFailed
                 Timber.d("postReservation: error - $it")
+                checkIfCanReserve()
             })
             .addTo(disposables)
     }
 
     fun setEmail(email: String) {
         this.email = email
+        checkIfCanReserve()
+    }
+
+    private fun checkIfCanReserve() {
+        var canReserve = true
+        if (email?.isNotBlank() != true) canReserve = false
+        val restaurantLevel = _restaurantLevel.value?.first ?: return
+        val tablesList = restaurantLevel.tables ?: return
+        val currentTable =
+            tablesList.firstOrNull { it.id == _restaurantLevel.value?.second ?: return }
+        if (currentTable?.reserved == true) canReserve = false
+
+        _canReserve.value = canReserve
     }
 
     companion object {

@@ -12,6 +12,7 @@ interface PlacesApi {
     fun getPlaces(
         @Query("location") location: String,
         @Query("radius") radius: Int,
+        @Query("keyword") keyword: String? = null,
         @Query("type") type: String = "restaurant"
     ): Flowable<NearbySearchResponse>
 

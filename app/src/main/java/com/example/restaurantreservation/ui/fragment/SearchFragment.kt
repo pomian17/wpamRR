@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isInvisible
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.example.restaurantreservation.R
@@ -46,8 +48,31 @@ class SearchFragment : DaggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel =
             ViewModelProvider(requireActivity(), providerFactory).get(SearchViewModel::class.java)
-        test_button.setOnClickListener {
-            viewModel.searchForNearbyRestaurants()
+        viewModel.status.observe(viewLifecycleOwner,
+            Observer { status ->
+                when (status) {
+                    LoadingStatus.LOADING -> {
+                        search_button.isInvisible = true
+                        search_progressbar.isInvisible = false
+                    }
+                    LoadingStatus.LOADED -> {
+                        search_button.isInvisible = false
+                        search_progressbar.isInvisible = true
+                    }
+                    LoadingStatus.ERROR -> {
+                        search_button.isInvisible = false
+                        search_progressbar.isInvisible = true
+                        Toast.makeText(
+                            context,
+                            "Error loading restaurants. Try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        )
+        search_button.setOnClickListener {
+            viewModel.searchForNearbyRestaurants(search_keyword.text.toString())
         }
         setupViewPager()
         fetchLocation()
@@ -117,5 +142,9 @@ class SearchFragment : DaggerFragment() {
 
     companion object {
         const val REQUEST_CODE = 174
+
+        enum class LoadingStatus {
+            LOADING, LOADED, ERROR
+        }
     }
 }

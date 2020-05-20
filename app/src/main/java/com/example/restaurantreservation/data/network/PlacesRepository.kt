@@ -8,7 +8,6 @@ import com.example.restaurantreservation.data.model.wpamrr.RrRestaurantResponse
 import com.example.restaurantreservation.data.network.places.PlacesApi
 import com.example.restaurantreservation.data.network.restaurantreservation.RrApi
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.gson.Gson
 import io.reactivex.Flowable
 import io.reactivex.functions.BiFunction
 import java.util.concurrent.TimeUnit
@@ -20,10 +19,11 @@ class PlacesRepository @Inject constructor(
 ) {
 
     fun getFullNearbyPlaces(
-        bounds: LatLngBounds
+        bounds: LatLngBounds,
+        keyword: String? = null
     ): Flowable<List<Restaurant>> {
         return Flowable.combineLatest<List<Restaurant>, RrRestaurantResponse, List<Restaurant>>(
-            getGoogleNearbyPlaces(bounds),
+            getGoogleNearbyPlaces(bounds, keyword),
             rrApi.getRestaurants(),
             BiFunction { nearbySearchResponse, rrRestaurantResponse ->
                 nearbySearchResponse.forEach {
@@ -37,7 +37,7 @@ class PlacesRepository @Inject constructor(
 
     private fun getGoogleNearbyPlaces(
         bounds: LatLngBounds,
-        type: String = "restaurant"
+        keyword: String? = null
     ): Flowable<List<Restaurant>> {
         val location = bounds.center
         val distanceResults = FloatArray(3)
@@ -51,7 +51,7 @@ class PlacesRepository @Inject constructor(
         return placesApi.getPlaces(
             location.latitude.toString() + ", " + location.longitude.toString(),
             distanceResults.first().toInt(),
-            type
+            keyword
         )
             .flatMap { getNextPages(it.nextPageToken, it.restaurants.orEmpty()) }
     }

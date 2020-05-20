@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -22,15 +23,14 @@ import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
 import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantViewHolder
 import com.example.restaurantreservation.ui.fragment.RestaurantFragment.Companion.EXTRA_PLACE_ID
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
+import com.example.restaurantreservation.util.MarkerDrawer
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -108,7 +108,14 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                 googleMap?.addMarker(
                     MarkerOptions()
                         .position(LatLng(it.latitude, it.longitude))
-                        .alpha(if (restaurant.isInRrDatabase) 1.0f else 0.3f)
+                        .icon(
+                            BitmapDescriptorFactory.fromBitmap(
+                                MarkerDrawer.drawMarker(
+                                    restaurant.rating,
+                                    requireContext()
+                                )
+                            )
+                        )
                 )?.apply {
                     tag = restaurant.placeId
                     markers.add(this)
@@ -134,12 +141,18 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                     it.placeId
                 )
             })
+        recyclerview.isVisible = restaurants.isNotEmpty()
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
         this.googleMap = googleMap
         val latLng = currentLocation?.let { LatLng(it.latitude, it.longitude) }
         googleMap?.apply {
+            setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(), R.raw.map_style
+                )
+            )
             uiSettings?.setAllGesturesEnabled(true)
             uiSettings?.isMyLocationButtonEnabled = true
             uiSettings?.isZoomControlsEnabled = true

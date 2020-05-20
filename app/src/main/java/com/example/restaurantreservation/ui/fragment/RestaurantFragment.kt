@@ -1,6 +1,5 @@
 package com.example.restaurantreservation.ui.fragment
 
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.view.LayoutInflater
@@ -25,8 +24,6 @@ import com.example.restaurantreservation.util.RestaurantMapDrawer.drawRestaurant
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_restaurant.*
-import kotlinx.android.synthetic.main.fragment_restaurant.restaurant_name
-import kotlinx.android.synthetic.main.reservation_view_holder.*
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -51,7 +48,8 @@ class RestaurantFragment : DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         time_text.text =
-            DateFormat.format(Constants.DISPLAY_DATE_FORMAT, Date(System.currentTimeMillis())).toString()
+            DateFormat.format(Constants.DISPLAY_DATE_FORMAT, Date(System.currentTimeMillis()))
+                .toString()
         viewModel =
             ViewModelProvider(
                 requireActivity(),

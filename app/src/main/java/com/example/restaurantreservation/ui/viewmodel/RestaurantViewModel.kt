@@ -42,7 +42,6 @@ class RestaurantViewModel @Inject constructor(
     val maxLevel: LiveData<Int?>
         get() = _maxLevel
 
-
     private val _canReserve = MutableLiveData<Boolean>()
     val canReserve: LiveData<Boolean>
         get() = _canReserve
@@ -52,9 +51,10 @@ class RestaurantViewModel @Inject constructor(
     private var restaurantDetails: RestaurantDetails? = null
     private lateinit var placeId: String
     private var email: String? = null
-    private var selectedDate : String? = null
+    private var selectedDate: String? = null
 
     fun initialize(data: RestaurantAdapterModel?) {
+        _state.value = RestaurantViewState.Loading
         data ?: return
         this.placeId = data.placeId
         setDateAndRefreshTables(System.currentTimeMillis())
@@ -94,7 +94,8 @@ class RestaurantViewModel @Inject constructor(
     }
 
     fun setDateAndRefreshTables(selectedTime: Long) {
-        val dateString = DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedTime)).toString()
+        val dateString =
+            DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedTime)).toString()
         selectedDate = dateString
         getRestaurantDetails(dateString)
     }

@@ -21,6 +21,5 @@ data class Restaurant(
     @SerializedName("opening_hours")
     var openingHours: OpeningHours? = null,
     @SerializedName("price_level")
-    var priceLevel: Int? = null,
-    var isInRrDatabase: Boolean = false
+    var priceLevel: Int? = null
 )

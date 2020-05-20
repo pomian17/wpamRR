@@ -26,11 +26,9 @@ class PlacesRepository @Inject constructor(
             getGoogleNearbyPlaces(bounds, keyword),
             rrApi.getRestaurants(),
             BiFunction { nearbySearchResponse, rrRestaurantResponse ->
-                nearbySearchResponse.forEach {
-                    it.isInRrDatabase =
+                nearbySearchResponse.filter {
                         rrRestaurantResponse.restaurants.contains(RrRestaurant(it.placeId))
                 }
-                nearbySearchResponse
             }
         )
     }

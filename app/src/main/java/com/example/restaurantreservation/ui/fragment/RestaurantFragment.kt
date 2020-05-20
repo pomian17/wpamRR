@@ -4,13 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.restaurantreservation.R
+import com.example.restaurantreservation.data.model.wpamrr.RestaurantLevel
+import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.viewmodel.RestaurantViewModel
+import com.example.restaurantreservation.ui.viewmodel.RestaurantViewModel.Companion.NEXT_TABLE
+import com.example.restaurantreservation.ui.viewmodel.RestaurantViewModel.Companion.PREV_TABLE
 import com.example.restaurantreservation.ui.widget.DateTimePicker
 import com.example.restaurantreservation.util.RestaurantMapDrawer.drawRestaurant
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
@@ -41,18 +43,17 @@ class RestaurantFragment : DaggerFragment() {
                 requireActivity(),
                 providerFactory
             ).get(RestaurantViewModel::class.java)
-        viewModel.initialize(arguments?.getString(EXTRA_PLACE_ID))
+        val data = arguments?.getParcelable<RestaurantAdapterModel>(EXTRA_PLACE_DATA)!!
+        restaurant_name.text = data.name
+        viewModel.initialize(data)
         viewModel.restaurantLevel.observe(
             viewLifecycleOwner,
             Observer {
                 val restaurantMap = drawRestaurant(it)
+                updateTableInfo(it)
                 restaurantMapView.setImageBitmap(restaurantMap)
             })
-        viewModel.tables.observe(
-            viewLifecycleOwner,
-            Observer { tablesIds ->
-                tablesIds?.let { updateSpinner(it) }
-            })
+
         viewModel.maxLevel.observe(
             viewLifecycleOwner,
             Observer {
@@ -82,20 +83,13 @@ class RestaurantFragment : DaggerFragment() {
             }
         }
 
-        table_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                viewModel.onTableSelected(null)
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.onTableSelected(table_spinner.getItemAtPosition(position) as Int)
-            }
+        next_table_button.setOnClickListener {
+            viewModel.onTableSelected(NEXT_TABLE)
         }
+        prev_table_button.setOnClickListener {
+            viewModel.onTableSelected(PREV_TABLE)
+        }
+
 
         email_field.doOnTextChanged { text, _, _, _ ->
             viewModel.setEmail(text.toString())
@@ -107,17 +101,13 @@ class RestaurantFragment : DaggerFragment() {
 
     }
 
-    private fun updateSpinner(tableIds: List<Int>) {
-        val adapter = ArrayAdapter<Int>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            tableIds
-        )
-        table_spinner.adapter = adapter
-        viewModel.onTableSelected(table_spinner.getItemAtPosition(0) as Int)
+    private fun updateTableInfo(data: Pair<RestaurantLevel, Int?>) {
+        val tableId = data.second
+        val tableCapacity = data.first.tables?.find { it.id == tableId }?.capacity ?: return
+        table_info.text = getString(R.string.table_info_template).format(tableId, tableCapacity)
     }
 
     companion object {
-        const val EXTRA_PLACE_ID = "extra.place.id"
+        const val EXTRA_PLACE_DATA = "extra.place.data"
     }
 }

@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.restaurant_viewholder.view.*
 
 class RestaurantViewHolder(
     view: View,
-    private val onClickListener: (String) -> Unit
+    private val onClickListener: (RestaurantAdapterModel) -> Unit
 ) : BaseViewHolder<RestaurantAdapterModel>(view) {
 
     override fun bind(model: RestaurantAdapterModel) {
@@ -51,6 +51,6 @@ class RestaurantViewHolder(
             view.opened_now.text = view.context.getString(R.string.currently_closed)
             view.opened_now.setTextColor(view.context.resources.getColor(R.color.rrRed, null))
         }
-        view.setOnClickListener { onClickListener.invoke(model.placeId) }
+        view.setOnClickListener { onClickListener.invoke(model) }
     }
 }

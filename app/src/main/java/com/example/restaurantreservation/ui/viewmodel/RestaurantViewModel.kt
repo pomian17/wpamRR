@@ -12,6 +12,7 @@ import com.example.restaurantreservation.data.model.wpamrr.ReservationBody
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantDetails
 import com.example.restaurantreservation.data.model.wpamrr.RestaurantLevel
 import com.example.restaurantreservation.data.network.restaurantreservation.RrApi
+import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -43,17 +44,13 @@ class RestaurantViewModel @Inject constructor(
         get() = _selectedDate
     private var disposables: CompositeDisposable = CompositeDisposable()
 
-    private val _tables = MutableLiveData<List<Int>>()
-    val tables: LiveData<List<Int>>
-        get() = _tables
-
     private var restaurantDetails: RestaurantDetails? = null
     private lateinit var placeId: String
     private var email: String? = null
 
-    fun initialize(placeId: String?) {
-        placeId ?: return
-        this.placeId = placeId
+    fun initialize(data: RestaurantAdapterModel?) {
+        data ?: return
+        this.placeId = data.placeId
         setDateAndRefreshTables(System.currentTimeMillis())
     }
 
@@ -64,8 +61,7 @@ class RestaurantViewModel @Inject constructor(
             .subscribe({ details ->
                 Timber.d("getRestaurant: $details")
                 details.levels?.firstOrNull()?.let { level ->
-                    _restaurantLevel.value = level to null
-                    _tables.value = level.tables?.map { it.id }
+                    _restaurantLevel.value = level to level.tables?.first()?.id
                 }
                 _maxLevel.value = details.levels?.lastIndex
                 restaurantDetails = details
@@ -82,8 +78,7 @@ class RestaurantViewModel @Inject constructor(
 
     fun selectFloor(floorNr: Int) {
         restaurantDetails?.levels?.getOrNull(floorNr)?.let { level ->
-            _restaurantLevel.value = level to null
-            _tables.value = level.tables?.map { it.id }
+            _restaurantLevel.value = level to level.tables?.first()?.id
         }
     }
 
@@ -93,10 +88,19 @@ class RestaurantViewModel @Inject constructor(
         getRestaurantDetails(dateString)
     }
 
-    fun onTableSelected(selectedTable: Int?) {
-        _restaurantLevel.value?.first?.let { currentRestauratLevel ->
-            _restaurantLevel.value = currentRestauratLevel to selectedTable
-        }
+    fun onTableSelected(buttonAction: Int) {
+        val restaurantLevel = _restaurantLevel.value?.first ?: return
+        val tablesList = restaurantLevel.tables ?: return
+        val currentTablePosition =
+            tablesList.indexOfFirst { it.id == _restaurantLevel.value?.second ?: return }
+
+        var newTablePosition = currentTablePosition + buttonAction
+        if (newTablePosition < 0) newTablePosition = tablesList.lastIndex
+        if (newTablePosition > tablesList.lastIndex) newTablePosition = 0
+        val newTableId = tablesList[newTablePosition].id
+
+        _restaurantLevel.value = restaurantLevel to newTableId
+
     }
 
     fun sendBookingRequest() {
@@ -114,18 +118,18 @@ class RestaurantViewModel @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Timber.d("postReservation: $it")
-                Toast.makeText(context,"Reservation successful!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Reservation successful!", Toast.LENGTH_SHORT).show()
                 CoroutineScope(Dispatchers.IO).launch {
                     reservationRepository.insert(
                         Reservation(
-                           it.guid,
+                            it.guid,
                             date,
                             placeId
                         )
                     )
                 }
             }, {
-                Toast.makeText(context,"Reservation failed!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Reservation failed!", Toast.LENGTH_SHORT).show()
                 Timber.d("postReservation: error - $it")
             })
             .addTo(disposables)
@@ -133,5 +137,10 @@ class RestaurantViewModel @Inject constructor(
 
     fun setEmail(email: String) {
         this.email = email
+    }
+
+    companion object {
+        const val PREV_TABLE = -1
+        const val NEXT_TABLE = 1
     }
 }

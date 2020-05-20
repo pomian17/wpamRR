@@ -26,7 +26,7 @@ class ResultsListFragment : DaggerFragment() {
     lateinit var providerFactory: ViewModelProviderFactory
 
     private val adapter = RestaurantsListAdapter {
-        val bundle = bundleOf(RestaurantFragment.EXTRA_PLACE_ID to it)
+        val bundle = bundleOf(RestaurantFragment.EXTRA_PLACE_DATA to it)
         findNavController().navigate(R.id.action_searchFragment_to_restaurantFragment, bundle)
     }
 

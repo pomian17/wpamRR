@@ -21,7 +21,7 @@ import com.example.restaurantreservation.data.model.places.Restaurant
 import com.example.restaurantreservation.ui.adapter.RestaurantAdapterModel
 import com.example.restaurantreservation.ui.adapter.RestaurantsListAdapter
 import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantViewHolder
-import com.example.restaurantreservation.ui.fragment.RestaurantFragment.Companion.EXTRA_PLACE_ID
+import com.example.restaurantreservation.ui.fragment.RestaurantFragment.Companion.EXTRA_PLACE_DATA
 import com.example.restaurantreservation.ui.viewmodel.SearchViewModel
 import com.example.restaurantreservation.util.MarkerDrawer
 import com.example.restaurantreservation.viewmodel.ViewModelProviderFactory
@@ -49,7 +49,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
     private var googleMap: GoogleMap? = null
 
     private val adapter = RestaurantsListAdapter {
-        val bundle = bundleOf(EXTRA_PLACE_ID to it)
+        val bundle = bundleOf(EXTRA_PLACE_DATA to it)
         findNavController().navigate(R.id.action_searchFragment_to_restaurantFragment, bundle)
     }
 

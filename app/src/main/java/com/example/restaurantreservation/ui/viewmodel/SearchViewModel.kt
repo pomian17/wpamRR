@@ -31,8 +31,8 @@ class SearchViewModel @Inject constructor(
     private var searchArea: LatLngBounds? = null
 
     fun searchForNearbyRestaurants(keyword: String?) {
-        _status.value = SearchFragment.Companion.LoadingStatus.LOADING
         searchArea?.let {
+            _status.value = SearchFragment.Companion.LoadingStatus.LOADING
             placesRepository.getFullNearbyPlaces(it, keyword)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

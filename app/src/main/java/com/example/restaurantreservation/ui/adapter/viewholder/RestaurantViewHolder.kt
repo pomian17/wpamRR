@@ -1,5 +1,7 @@
 package com.example.restaurantreservation.ui.adapter.viewholder
 
+import android.animation.ArgbEvaluator
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
@@ -30,6 +32,18 @@ class RestaurantViewHolder(
                 .into(view.restaurant_image)
         }
         view.restaurant_rating.text = model.rating.toString()
+
+        val background = GradientDrawable()
+        background.setColor(
+            ArgbEvaluator().evaluate(
+                ((model.rating.toFloat() - 2) / 3).coerceIn(0.0f, 1.0f),
+                view.context.resources.getColor(R.color.rrRed, null),
+                view.context.resources.getColor(R.color.rrGreen, null)
+            ) as Int
+        )
+        background.cornerRadius = 3f
+        view.restaurant_rating.background = background
+
         if (model.openedNow == true) {
             view.opened_now.text = view.context.getString(R.string.opened_now)
             view.opened_now.setTextColor(view.context.resources.getColor(R.color.rrGreen, null))

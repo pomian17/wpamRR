@@ -19,7 +19,7 @@ class ReservationListAdapter constructor(
 }
 
 class ReservationAdapterModel(
-    val placeId: String,
+    val restaurantName: String,
     val guid: String,
-    val datetime: String
+    val datetime: Long
 )

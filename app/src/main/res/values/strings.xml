@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RestaurantReservation</string>
+    <string name="app_name">Restaurant Reservation</string>
     <string name="title_activity_maps">Map</string>
     <string name="map_tab">Map</string>
     <string name="list_tab">List</string>
@@ -16,4 +16,8 @@
     <string name="date">Date:</string>
     <string name="table_info_template">%d - %d person(s)</string>
     <string name="loading_restaurant">loading data…</string>
+    <string name="delete_reservation_title">Do you want to cancel your reservation?</string>
+    <string name="delete_reservation_yes">Yes</string>
+    <string name="no_reservations">You have no reservations</string>
+    <string name="delete_reservation_no">No</string>
 </resources>

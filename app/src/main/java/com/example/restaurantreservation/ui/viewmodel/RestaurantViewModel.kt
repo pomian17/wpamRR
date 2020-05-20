@@ -51,18 +51,22 @@ class RestaurantViewModel @Inject constructor(
     private var restaurantDetails: RestaurantDetails? = null
     private lateinit var placeId: String
     private var email: String? = null
-    private var selectedDate: String? = null
+    private var selectedDate: Long? = null
+    private lateinit var restaurantName :String
 
     fun initialize(data: RestaurantAdapterModel?) {
         _state.value = RestaurantViewState.Loading
         data ?: return
         this.placeId = data.placeId
+        this.restaurantName = data.name
         setDateAndRefreshTables(System.currentTimeMillis())
         _canReserve.value = false
     }
 
-    private fun getRestaurantDetails(dateTime: String? = null) {
-        rrApi.getRestaurant(placeId, dateTime)
+    private fun getRestaurantDetails(dateTime: Long? = null) {
+        val date =
+            DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedDate?: return)).toString()
+        rrApi.getRestaurant(placeId, date)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ details ->
@@ -94,10 +98,8 @@ class RestaurantViewModel @Inject constructor(
     }
 
     fun setDateAndRefreshTables(selectedTime: Long) {
-        val dateString =
-            DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedTime)).toString()
-        selectedDate = dateString
-        getRestaurantDetails(dateString)
+        selectedDate = selectedTime
+        getRestaurantDetails(selectedTime)
     }
 
     fun onTableSelected(buttonAction: Int) {
@@ -116,7 +118,9 @@ class RestaurantViewModel @Inject constructor(
 
     fun sendBookingRequest() {
         _canReserve.value = false
-        val date = selectedDate ?: return
+        val selectedDate = selectedDate?: return
+        val date =
+            DateFormat.format(Constants.SERVER_DATE_FORMAT, Date(selectedDate)).toString()
         val selectedTableId = _restaurantLevel.value?.second ?: return
         val email = this.email ?: return
         rrApi.postReservation(
@@ -135,8 +139,8 @@ class RestaurantViewModel @Inject constructor(
                     reservationRepository.insert(
                         Reservation(
                             it.guid,
-                            date,
-                            placeId
+                            selectedDate,
+                            restaurantName
                         )
                     )
                 }

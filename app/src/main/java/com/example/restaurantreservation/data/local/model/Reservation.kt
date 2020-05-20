@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class Reservation(
     @PrimaryKey
     val guid: String,
-    val date: String,
-    val placeId: String
+    val date: Long,
+    val restaurantName: String
 )

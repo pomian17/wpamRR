@@ -5,7 +5,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.restaurantreservation.ui.fragment.SearchFragment"
-        android:label="SearchFragment" >
+        android:label="Search for restaurants" >
         <action
             android:id="@+id/action_searchFragment_to_restaurantFragment"
             app:destination="@id/restaurantFragment" />
@@ -13,9 +13,9 @@
     <fragment
         android:id="@+id/restaurantFragment"
         android:name="com.example.restaurantreservation.ui.fragment.RestaurantFragment"
-        android:label="RestaurantFragment" />
+        android:label="Reserve table" />
     <fragment
         android:id="@+id/reservationsFragment"
         android:name="com.example.restaurantreservation.ui.fragment.ReservationsFragment"
-        android:label="ReservationsFragment" />
+        android:label="Your reservations" />
 </navigation>

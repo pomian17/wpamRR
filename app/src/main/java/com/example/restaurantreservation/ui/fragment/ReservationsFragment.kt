@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.restaurantreservation.R
@@ -24,7 +26,19 @@ class ReservationsFragment : DaggerFragment() {
     lateinit var providerFactory: ViewModelProviderFactory
 
     private val adapter = ReservationListAdapter {
-        viewModel.cancelReservation(it)
+        onCancelReservationClicked(it)
+    }
+
+    private fun onCancelReservationClicked(reservationGuid: String) {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_reservation_title)
+                .setPositiveButton(R.string.delete_reservation_yes) { _, _ ->
+                    viewModel.cancelReservation(reservationGuid)
+                }
+                .setNegativeButton(R.string.delete_reservation_no) { _, _ ->
+                    adapter.notifyDataSetChanged()
+                }
+                .show()
     }
 
     override fun onCreateView(
@@ -50,10 +64,11 @@ class ReservationsFragment : DaggerFragment() {
     }
 
     private fun refreshReservations(reservations: List<Reservation>) {
+        no_reservations_text.isVisible = reservations.isEmpty()
         adapter.setAllItems(
             reservations.map {
                 ReservationAdapterModel(
-                    it.placeId,
+                    it.restaurantName,
                     it.guid,
                     it.date
                 )

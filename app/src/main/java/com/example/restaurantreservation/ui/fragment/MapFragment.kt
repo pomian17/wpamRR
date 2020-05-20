@@ -137,7 +137,7 @@ class MapFragment : DaggerFragment(), OnMapReadyCallback {
                     it.name,
                     it.photos?.first()?.getPhotoRequest(),
                     it.rating,
-                    it.openingHours?.openNow.toString(),
+                    it.openingHours?.openNow,
                     it.placeId
                 )
             })

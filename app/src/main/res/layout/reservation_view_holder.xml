@@ -15,7 +15,7 @@
         android:layout_marginStart="16dp"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/opening_hours"
+        app:layout_constraintBottom_toTopOf="@+id/opened_now"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"

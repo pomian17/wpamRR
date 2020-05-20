@@ -10,4 +10,6 @@
     <string name="search">Search</string>
     <string name="reservations">Reservations</string>
     <string name="enter_query">enter query</string>
+    <string name="opened_now">opened now</string>
+    <string name="currently_closed">currently closed</string>
 </resources>

@@ -6,7 +6,7 @@ import com.example.restaurantreservation.ui.adapter.viewholder.BaseViewHolder
 import com.example.restaurantreservation.ui.adapter.viewholder.RestaurantViewHolder
 
 class RestaurantsListAdapter constructor(
-    private val onClickListener: (String)->Unit
+    private val onClickListener: (String) -> Unit
 ) : BaseAdapter<RestaurantAdapterModel, BaseViewHolder<RestaurantAdapterModel>>() {
 
     override fun onCreateViewHolder(
@@ -22,6 +22,6 @@ class RestaurantAdapterModel(
     val name: String,
     val imageUrl: String?,
     val rating: Double,
-    val openingHours: String,
+    val openedNow: Boolean?,
     val placeId: String
 )

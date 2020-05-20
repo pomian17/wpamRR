@@ -23,21 +23,21 @@
         android:textStyle="bold"
         android:layout_marginStart="16dp"
         android:textColor="@android:color/black"
-        app:layout_constraintBottom_toTopOf="@+id/opening_hours"
+        app:layout_constraintBottom_toTopOf="@+id/opened_now"
         app:layout_constraintStart_toEndOf="@+id/restaurant_image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Restaurant" />
 
     <TextView
-        android:id="@+id/opening_hours"
+        android:id="@+id/opened_now"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/restaurant_name"
         app:layout_constraintTop_toBottomOf="@+id/restaurant_name"
-        tools:text="open now" />
+        tools:text="@string/opened_now" />
 
     <TextView
         android:id="@+id/restaurant_rating"
